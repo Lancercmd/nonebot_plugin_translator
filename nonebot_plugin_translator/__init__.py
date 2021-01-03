@@ -2,7 +2,7 @@
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2021-01-02 19:16:08
+LastEditTime : 2021-01-04 00:34:51
 Description  : None
 GitHub       : https://github.com/Lancercmd
 '''
@@ -120,7 +120,9 @@ async def _(bot: Bot, event: Event, state: T_State):
             try:
                 await translate.finish(message)
             except ActionFailed as e:
-                logger.error(f'ActionFailed retcode = {e.retcode}')
+                logger.error(
+                    f'ActionFailed | {e.info["msg"].lower()} | retcode = {e.info["retcode"]} | {e.info["wording"]}'
+                )
                 return
         elif state['source'] == 'zh':
             available.remove('zh')
@@ -156,7 +158,9 @@ async def _(bot: Bot, event: Event, state: T_State):
             try:
                 await translate.finish(message)
             except ActionFailed as e:
-                logger.error(f'ActionFailed retcode = {e.retcode}')
+                logger.error(
+                    f'ActionFailed | {e.info["msg"].lower()} | retcode = {e.info["retcode"]} | {e.info["wording"]}'
+                )
                 return
         message = '请输入要翻译的内容~'
         state['prompt'] = message
@@ -188,7 +192,9 @@ async def _(bot: Bot, event: Event, state: T_State):
                 try:
                     await translate.finish(message)
                 except ActionFailed as e:
-                    logger.error(f'ActionFailed retcode = {e.retcode}')
+                    logger.error(
+                        f'ActionFailed | {e.info["msg"].lower()} | retcode = {e.info["retcode"]} | {e.info["wording"]}'
+                    )
                     return
             data = loadsJson(await resp.read())
         if data['ret']:
@@ -196,13 +202,17 @@ async def _(bot: Bot, event: Event, state: T_State):
             try:
                 await translate.finish(message)
             except ActionFailed as e:
-                logger.error(f'ActionFailed retcode = {e.retcode}')
+                logger.error(
+                    f'ActionFailed | {e.info["msg"].lower()} | retcode = {e.info["retcode"]} | {e.info["wording"]}'
+                )
                 return
         message = data['data']['target_text']
         try:
             await translate.finish(message)
         except ActionFailed as e:
-            logger.error(f'ActionFailed retcode = {e.retcode}')
+            logger.error(
+                f'ActionFailed | {e.info["msg"].lower()} | retcode = {e.info["retcode"]} | {e.info["wording"]}'
+            )
             return
     else:
         logger.warning('Not supported: translator')
