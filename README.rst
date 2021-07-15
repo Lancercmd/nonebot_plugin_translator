@@ -1,4 +1,4 @@
-nonebot_plugin_translator
+nonebot plugin translator
 ========
 
 - 基于 `nonebot / nonebot2 <https://github.com/nonebot/nonebot2>`_
@@ -8,12 +8,12 @@ nonebot_plugin_translator
 
 - 多语种翻译插件
 
-    接口来自 `腾讯 AI 开放平台 <https://ai.qq.com/product/nlptrans.shtml>`_
+    接口来自 `腾讯机器翻译 TMT <https://cloud.tencent.com/product/tmt>`_ 目前使用 `签名方法 v1 <https://cloud.tencent.com/document/api/213/15692#.E4.BD.BF.E7.94.A8.E7.AD.BE.E5.90.8D.E6.96.B9.E6.B3.95-v1-.E7.9A.84.E5.85.AC.E5.85.B1.E5.8F.82.E6.95.B0>`_
 
 准备工作
 --------
 
-- 在 `腾讯 AI 开放平台 <https://ai.qq.com/console/>`_ 新建应用，并从能力库接入 `机器翻译 <https://ai.qq.com/console/capability/detail/7>`_ 能力
+- 在 `云API密钥 <https://console.cloud.tencent.com/capi>`_ 新建密钥，取得 ``SecretId`` 和 ``SecretKey``
 
 开始使用
 --------
@@ -36,27 +36,30 @@ nonebot_plugin_translator
 
     当使用 `nb-cli <https://github.com/nonebot/nb-cli>`_ 添加本插件时，该条会被自动添加
 
-.. code-block:: python
+.. code-block:: python3
 
   nonebot.load_plugin('nonebot_plugin_translator')
 
-- 参照下文在 nonebot2 项目的环境文件 .env.* 中添加配置项
+- 参照下文在 nonebot2 项目的环境文件 ``.env.*`` 中添加配置项
 
 配置项
 --------
 
-- `腾讯 AI 开放平台 <https://ai.qq.com/console/>`_ 应用鉴权信息（必须）：
+- 腾讯云 API 请求的公共参数（必须）
 
-  ``tencent_app_id: int`` 应用 APPID
+  ``tencentcloud_common_region: str`` `地域参数 <https://cloud.tencent.com/document/api/551/15615#.E5.9C.B0.E5.9F.9F.E5.88.97.E8.A1.A8>`_ ，用来标识希望操作哪个地域的数据
 
-  ``tencent_app_key: str`` 应用 APPKEY
+  ``tencentcloud_common_secretid: str`` 在 `云API密钥 <https://console.cloud.tencent.com/capi>`_ 上申请的标识身份的 ``SecretId``，一个 ``SecretId`` 对应唯一的 ``SecretKey``
+
+  ``tencentcloud_common_secretkey: str`` 你的 ``SecretKey`` 用来生成请求签名 Signature
 
 .. code-block:: bash
 
-  tencent_app_id = 0123456789
-  tencent_app_key = ""
+  tencentcloud_common_region = "ap-shanghai"
+  tencentcloud_common_secretid = ""
+  tencentcloud_common_secretkey = ""
 
-- 这样，就能够在 bot 所在群聊或私聊发送 `翻译` 或 `机翻` 使用了
+- 这样，就能够在 bot 所在群聊或私聊发送 ``翻译`` 或 ``机翻`` 使用了
 
 特别感谢
 --------
@@ -67,4 +70,4 @@ nonebot_plugin_translator
 优化建议
 --------
 
-如有优化建议请积极提交 Issues 或 Pull requests
+请积极提交 Issues 或 Pull requests
