@@ -2,7 +2,7 @@
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2021-07-15 23:44:39
+LastEditTime : 2021-07-19 07:52:15
 Description  : None
 GitHub       : https://github.com/Lancercmd
 '''
@@ -250,7 +250,7 @@ async def _(bot: Bot, event: Event, state: T_State):
         if 'Error' in data:
             message = '\n'.join([
                 f'<{data["Error"]["Code"]}> {data["Error"]["Message"]}',
-                f'RequestId: {data["Error"]["RequestId"]}'
+                f'RequestId: {data["RequestId"]}'
             ])
             if 'header' in state:
                 message = ''.join([state['header'], f'{message}'])
