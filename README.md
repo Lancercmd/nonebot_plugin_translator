@@ -2,7 +2,7 @@
  * @Author       : Lancercmd
  * @Date         : 2020-12-15 10:21:55
  * @LastEditors  : Lancercmd
- * @LastEditTime : 2021-07-16 00:20:21
+ * @LastEditTime : 2021-08-08 00:16:47
  * @Description  : None
  * @GitHub       : https://github.com/Lancercmd
 -->
@@ -14,11 +14,15 @@
 
 - 多语种翻译插件
 
-> 接口来自 [腾讯机器翻译 TMT](https://cloud.tencent.com/product/tmt) 目前使用 [签名方法 v1](https://cloud.tencent.com/document/api/213/15692#.E4.BD.BF.E7.94.A8.E7.AD.BE.E5.90.8D.E6.96.B9.E6.B3.95-v1-.E7.9A.84.E5.85.AC.E5.85.B1.E5.8F.82.E6.95.B0)
+  > 接口来自 [腾讯机器翻译 TMT](https://cloud.tencent.com/product/tmt) 目前使用 [签名方法 v1](https://cloud.tencent.com/document/api/213/15692#.E4.BD.BF.E7.94.A8.E7.AD.BE.E5.90.8D.E6.96.B9.E6.B3.95-v1-.E7.9A.84.E5.85.AC.E5.85.B1.E5.8F.82.E6.95.B0)
 
 ## 准备工作
 
 - 在 [云API密钥](https://console.cloud.tencent.com/capi) 新建密钥，取得 `SecretId` 和 `SecretKey`
+
+- 打开 [机器翻译控制台](https://console.cloud.tencent.com/tmt) 确认是否能正常看到概览页面
+
+  > 若提示没有完成实名认证，则需要完成才能继续和正常使用
 
 ## 开始使用
 
@@ -37,7 +41,8 @@ pip install nonebot-plugin-translator
 ```
 
 - 在 nonebot2 项目中设置 `nonebot.load_plugin()`
-> 当使用 [nb-cli](https://github.com/nonebot/nb-cli) 添加本插件时，该条会被自动添加
+
+  > 当使用 [nb-cli](https://github.com/nonebot/nb-cli) 添加本插件时，该条会被自动添加
 
 ```python3
 nonebot.load_plugin('nonebot_plugin_translator')

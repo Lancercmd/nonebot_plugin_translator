@@ -15,6 +15,10 @@ nonebot plugin translator
 
 - 在 `云API密钥 <https://console.cloud.tencent.com/capi>`_ 新建密钥，取得 ``SecretId`` 和 ``SecretKey``
 
+- 打开 `机器翻译控制台 <https://console.cloud.tencent.com/tmt>`_ 确认是否能正常看到概览页面
+
+    若提示没有完成实名认证，则需要完成才能继续和正常使用
+
 开始使用
 --------
 
