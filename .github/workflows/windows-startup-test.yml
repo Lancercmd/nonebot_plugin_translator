@@ -2,9 +2,9 @@ name: Windows startup test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -14,10 +14,10 @@ jobs:
     steps:
     - name: Initialize
       uses: actions/checkout@v2
-    - name: Set up Python 3.9.6
+    - name: Set up Python 3.9.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9.6
+        python-version: 3.9.9
     - name: Run Powershell
       run: |
         powershell
@@ -34,9 +34,9 @@ jobs:
         path: |
           C:\Users\runneradmin\AppData\Local\pypoetry
         key: |
-          Yuni-v2.0.0a14
+          Yuni-v2.0.0b1
         restore-keys: |
-          Yuni-v2.0.0a14
+          Yuni-v2.0.0b1
     - name: Install dependencies
       if: |
         steps.poetry-cache.outputs.cache-hit != 'true'
