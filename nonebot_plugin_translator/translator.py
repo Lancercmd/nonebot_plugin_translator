@@ -2,7 +2,7 @@
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2022-01-08 23:50:27
+LastEditTime : 2022-01-14 23:34:59
 Description  : None
 GitHub       : https://github.com/Lancercmd
 '''
@@ -17,10 +17,10 @@ from time import time
 from aiohttp import request
 from loguru import logger
 from nonebot import get_driver
-from nonebot.adapters import Event, MessageTemplate
+from nonebot.adapters import Event, Message, MessageTemplate
 from nonebot.adapters.onebot.v11 import MessageEvent as OneBot_V11_MessageEvent
 from nonebot.exception import ActionFailed
-from nonebot.params import State
+from nonebot.params import CommandArg, State
 from nonebot.permission import Permission
 from nonebot.plugin import on_command
 from nonebot.typing import T_State
@@ -62,7 +62,7 @@ async def getReqSign(params: dict) -> str:
 
 
 @translate.handle()
-async def _(event: Event, state: T_State = State()):
+async def _(event: Event, state: T_State = State(), args: Message = CommandArg()):
     if isinstance(event, OneBot_V11_MessageEvent):
         available = [
             # "auto",
@@ -72,16 +72,17 @@ async def _(event: Event, state: T_State = State()):
         ]
         state["available"] = " | ".join(available)
         state["valid"] = deepcopy(available)
-        if event.get_plaintext(state):
+        _plain_text = args.extract_plain_text()
+        if _plain_text:
             for language in available:
-                if event.get_plaintext(state).startswith(language):
+                if _plain_text.startswith(language):
                     state["Source"] = language
                     break
-                elif event.get_plaintext(state).startswith("jp"):
+                elif _plain_text.startswith("jp"):
                     state["Source"] = "ja"
                     break
             if "Source" in state:
-                input = event.get_plaintext(state).split(" ", 2)
+                input = _plain_text.split(" ", 2)
                 available.remove("zh-TW")
                 if state["Source"] == "zh-TW":
                     available.remove("zh")
@@ -119,7 +120,7 @@ async def _(event: Event, state: T_State = State()):
                         else:
                             state["SourceText"] = input[1]
             else:
-                state["SourceText"] = event.get_plaintext(state)
+                state["SourceText"] = _plain_text
         message = f"请选择输入语种，可选值如下~\n{state['available']}"
         if "header" in state:
             message = "".join([state["header"], f"{message}"])
