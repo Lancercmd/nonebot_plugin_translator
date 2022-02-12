@@ -1,11 +1,11 @@
-'''
+"""
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2022-01-14 23:34:59
+LastEditTime : 2022-02-12 18:19:22
 Description  : None
 GitHub       : https://github.com/Lancercmd
-'''
+"""
 from binascii import b2a_base64
 from copy import deepcopy
 from hashlib import sha1
@@ -222,11 +222,7 @@ async def _(event: Event, state: T_State = State()):
                 "ProjectId": 0,
             }
             params["Signature"] = await getReqSign(params)
-            async with request(
-                "POST",
-                endpoint,
-                data=params
-            ) as resp:
+            async with request("POST", endpoint, data=params) as resp:
                 code = resp.status
                 if code != 200:
                     message = "※ 网络异常，请稍后再试~"
@@ -235,10 +231,12 @@ async def _(event: Event, state: T_State = State()):
                     await translate.finish(message)
                 data = loadJsonS(await resp.read())["Response"]
             if "Error" in data:
-                message = "\n".join([
-                    f"<{data['Error']['Code']}> {data['Error']['Message']}",
-                    f"RequestId: {data['RequestId']}"
-                ])
+                message = "\n".join(
+                    [
+                        f"<{data['Error']['Code']}> {data['Error']['Message']}",
+                        f"RequestId: {data['RequestId']}",
+                    ]
+                )
                 if "header" in state:
                     message = "".join([state["header"], f"{message}"])
                 await translate.finish(message)
