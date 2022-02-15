@@ -2,7 +2,7 @@
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2022-02-12 18:19:22
+LastEditTime : 2022-02-15 02:10:58
 Description  : None
 GitHub       : https://github.com/Lancercmd
 """
@@ -20,7 +20,7 @@ from nonebot import get_driver
 from nonebot.adapters import Event, Message, MessageTemplate
 from nonebot.adapters.onebot.v11 import MessageEvent as OneBot_V11_MessageEvent
 from nonebot.exception import ActionFailed
-from nonebot.params import CommandArg, State
+from nonebot.params import CommandArg
 from nonebot.permission import Permission
 from nonebot.plugin import on_command
 from nonebot.typing import T_State
@@ -41,16 +41,16 @@ async def _(event: Event) -> Permission:
 async def getReqSign(params: dict) -> str:
     common = {
         "Action": "TextTranslate",
-        "Region": f"{config.tencentcloud_common_region}",
+        "Region": f"{getattr(config, 'tencentcloud_common_region', 'ap-shanghai')}",
         "Timestamp": int(time()),
         "Nonce": randint(1, maxsize),
-        "SecretId": f"{config.tencentcloud_common_secretid}",
+        "SecretId": f"{getattr(config, 'tencentcloud_common_secretid', '')}",
         "Version": "2018-03-21",
     }
     params.update(common)
     sign_str = "POSTtmt.tencentcloudapi.com/?"
     sign_str += "&".join("%s=%s" % (k, params[k]) for k in sorted(params))
-    secret_key = config.tencentcloud_common_secretkey
+    secret_key = getattr(config, "tencentcloud_common_secretkey", "")
     if version_info[0] > 2:
         sign_str = bytes(sign_str, "utf-8")
         secret_key = bytes(secret_key, "utf-8")
@@ -62,7 +62,7 @@ async def getReqSign(params: dict) -> str:
 
 
 @translate.handle()
-async def _(event: Event, state: T_State = State(), args: Message = CommandArg()):
+async def _(event: Event, state: T_State, args: Message = CommandArg()):
     if isinstance(event, OneBot_V11_MessageEvent):
         available = [
             # "auto",
@@ -131,7 +131,7 @@ async def _(event: Event, state: T_State = State(), args: Message = CommandArg()
 
 
 @translate.got("Source", prompt=MessageTemplate("{prompt}"))
-async def _(event: Event, state: T_State = State()):
+async def _(event: Event, state: T_State):
     if isinstance(event, OneBot_V11_MessageEvent):
         _source = str(state["Source"])
         try:
@@ -183,7 +183,7 @@ async def _(event: Event, state: T_State = State()):
 
 
 @translate.got("Target", prompt=MessageTemplate("{prompt}"))
-async def _(event: Event, state: T_State = State()):
+async def _(event: Event, state: T_State):
     if isinstance(event, OneBot_V11_MessageEvent):
         _target = str(state["Target"])
         try:
@@ -208,7 +208,7 @@ async def _(event: Event, state: T_State = State()):
 
 
 @translate.got("SourceText", prompt=MessageTemplate("{prompt}"))
-async def _(event: Event, state: T_State = State()):
+async def _(event: Event, state: T_State):
     if isinstance(event, OneBot_V11_MessageEvent):
         _source_text = str(state["SourceText"])
         _source = state["Source"]
