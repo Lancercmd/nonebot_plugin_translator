@@ -3,7 +3,7 @@ name = "nonebot_plugin_translator"
 version = "2.0.0-beta.2"
 description = "Multi language tanslator worked with nonebot2"
 authors = ["Lancercmd <lancercmd@gmail.com>"]
-license = "GPLv3"
+license = "GPL-3.0-or-later"
 readme = "README.rst"
 repository = "https://github.com/Lancercmd/nonebot_plugin_translator"
 
