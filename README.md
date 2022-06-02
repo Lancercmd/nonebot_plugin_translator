@@ -1,5 +1,5 @@
 # 多语种翻译插件
-基于 [NoneBot2](https://github.com/nonebot/nonebot2)
+基于 [NoneBot2](https://github.com/nonebot/nonebot2)。
 ## 前言
 接口来自 [腾讯机器翻译 TMT](https://cloud.tencent.com/product/tmt) 目前使用 [签名方法 v1](https://cloud.tencent.com/document/api/213/15692#.E4.BD.BF.E7.94.A8.E7.AD.BE.E5.90.8D.E6.96.B9.E6.B3.95-v1-.E7.9A.84.E5.85.AC.E5.85.B1.E5.8F.82.E6.95.B0)
 ## 准备工作
