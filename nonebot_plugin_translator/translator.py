@@ -2,7 +2,7 @@
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2022-02-15 02:10:58
+LastEditTime : 2022-06-21 13:30:40
 Description  : None
 GitHub       : https://github.com/Lancercmd
 """
@@ -22,7 +22,7 @@ from nonebot.adapters.onebot.v11 import MessageEvent as OneBot_V11_MessageEvent
 from nonebot.exception import ActionFailed
 from nonebot.params import CommandArg
 from nonebot.permission import Permission
-from nonebot.plugin import on_command
+from nonebot.plugin import on_command, PluginMetadata
 from nonebot.typing import T_State
 from ujson import loads as loadJsonS
 
@@ -250,3 +250,11 @@ async def _(event: Event, state: T_State):
             )
     else:
         logger.warning("Not supported: translator")
+
+
+__plugin_meta__ = PluginMetadata(
+    name="多语种翻译插件",
+    description="接口来自 腾讯机器翻译 TMT",
+    usage="翻译 <ilang> <olang> <text>",
+    extra={"author": "Lancercmd"},
+)
