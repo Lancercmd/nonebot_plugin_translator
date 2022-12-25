@@ -60,159 +60,37 @@ async def getReqSign(params: dict) -> str:
         signature = signature.decode()
     return signature
 
+target = "zh"
+
+q_en = on_command("切换英文")
+@q_en.handle()
+async def _():
+ global target
+ target = "en"
+ await q_en.finish("切换成功")
+
+q_jp = on_command("切换日文")
+@q_jp.handle()
+async def _():
+ global target
+ target = "ja"
+ await q_jp.finish("切换成功")
+
+q_zh = on_command("切换中文")
+@q_zh.handle()
+async def _():
+ global target
+ target = "zh"
+ await q_zh.finish("切换成功")
 
 @translate.handle()
 async def _(event: Event, state: T_State, args: Message = CommandArg()):
-    if isinstance(event, OneBot_V11_MessageEvent):
-        available = [
-            # "auto",
-            "zh", "zh-TW", "en", "ja", "ko", "fr",
-            "es", "it", "de", "tr", "ru", "pt",
-            "vi", "id", "th", "ms", "ar", "hi"
-        ]
-        state["available"] = " | ".join(available)
-        state["valid"] = deepcopy(available)
-        _plain_text = args.extract_plain_text()
-        if _plain_text:
-            for language in available:
-                if _plain_text.startswith(language):
-                    state["Source"] = language
-                    break
-                elif _plain_text.startswith("jp"):
-                    state["Source"] = "ja"
-                    break
-            if "Source" in state:
-                input = _plain_text.split(" ", 2)
-                available.remove("zh-TW")
-                if state["Source"] == "zh-TW":
-                    available.remove("zh")
-                if state["Source"] != "en":
-                    for i in ["ar", "hi"]:
-                        available.remove(i)
-                if not state["Source"] in ["zh", "zh-TW", "en"]:
-                    for i in ["vi", "id", "th", "ms"]:
-                        available.remove(i)
-                if state["Source"] in ["ja", "ko", "vi", "id", "th", "ms", "ar", "hi"]:
-                    for i in ["fr", "es", "it", "de", "tr", "ru", "pt"]:
-                        available.remove(i)
-                if not state["Source"] in ["zh", "zh-TW", "en", "ja", "ko"]:
-                    for i in ["ja", "ko"]:
-                        available.remove(i)
-                if state["Source"] in ["ar", "hi"]:
-                    available.remove("zh")
-                try:
-                    available.remove(state["Source"])
-                except ValueError:
-                    pass
-                if len(available) == 1:
-                    state["Target"] = available[0]
-                    if len(input) == 3:
-                        state["SourceText"] = input[2]
-                    else:
-                        state["SourceText"] = input[1]
-                elif len(input) == 3:
-                    state["Target"] = input[1]
-                    state["SourceText"] = input[2]
-                elif len(input) == 2:
-                    for language in available:
-                        if input[0] in available:
-                            state["Target"] = input[1]
-                        else:
-                            state["SourceText"] = input[1]
-            else:
-                state["SourceText"] = _plain_text
-        message = f"请选择输入语种，可选值如下~\n{state['available']}"
-        if "header" in state:
-            message = "".join([state["header"], f"{message}"])
-        state["prompt"] = message
-    else:
-        logger.warning("Not supported: translator")
-        return
+ _plain_text = args.extract_plain_text()
 
-
-@translate.got("Source", prompt=MessageTemplate("{prompt}"))
-async def _(event: Event, state: T_State):
-    if isinstance(event, OneBot_V11_MessageEvent):
-        _source = str(state["Source"])
-        try:
-            available = deepcopy(state["valid"])
-            if _source.lower() == "jp":
-                _source = "ja"
-            elif not _source in state["valid"]:
-                message = f"不支持的输入语种 {_source}"
-                if "header" in state:
-                    message = "".join([state["header"], f"{message}"])
-                await translate.finish(message)
-            available.remove("zh-TW")
-            if _source == "zh-TW":
-                available.remove("zh")
-            if _source != "en":
-                for i in ["ar", "hi"]:
-                    available.remove(i)
-            if not _source in ["zh", "zh-TW", "en"]:
-                for i in ["vi", "id", "th", "ms"]:
-                    available.remove(i)
-            if _source in ["ja", "ko", "vi", "id", "th", "ms", "ar", "hi"]:
-                for i in ["fr", "es", "it", "de", "tr", "ru", "pt"]:
-                    available.remove(i)
-            if not _source in ["zh", "zh-TW", "en", "ja", "ko"]:
-                for i in ["ja", "ko"]:
-                    available.remove(i)
-            if _source in ["ar", "hi"]:
-                available.remove("zh")
-            try:
-                available.remove(_source)
-            except ValueError:
-                pass
-            if len(available) == 1:
-                state["Target"] = available[0]
-            else:
-                state["available"] = " | ".join(available)
-                state["valid"] = deepcopy(available)
-            message = f"请选择目标语种，可选值如下~\n{state['available']}"
-            if "header" in state:
-                message = "".join([state["header"], f"{message}"])
-            state["prompt"] = message
-        except ActionFailed as e:
-            logger.warning(
-                f"ActionFailed {e.info['retcode']} {e.info['msg'].lower()} {e.info['wording']}"
-            )
-    else:
-        logger.warning("Not supported: translator")
-        return
-
-
-@translate.got("Target", prompt=MessageTemplate("{prompt}"))
-async def _(event: Event, state: T_State):
-    if isinstance(event, OneBot_V11_MessageEvent):
-        _target = str(state["Target"])
-        try:
-            if _target.lower() == "jp":
-                _target = "ja"
-            elif not _target in state["valid"]:
-                message = f"不支持的目标语种 {_target}"
-                if "header" in state:
-                    message = "".join([state["header"], f"{message}"])
-                await translate.finish(message)
-            message = "请输入要翻译的内容~"
-            if "header" in state:
-                message = "".join([state["header"], f"{message}"])
-            state["prompt"] = message
-        except ActionFailed as e:
-            logger.warning(
-                f"ActionFailed {e.info['retcode']} {e.info['msg'].lower()} {e.info['wording']}"
-            )
-    else:
-        logger.warning("Not supported: translator")
-        return
-
-
-@translate.got("SourceText", prompt=MessageTemplate("{prompt}"))
-async def _(event: Event, state: T_State):
-    if isinstance(event, OneBot_V11_MessageEvent):
-        _source_text = str(state["SourceText"])
-        _source = state["Source"]
-        _target = state["Target"]
+ if isinstance(event, OneBot_V11_MessageEvent):
+        _source_text = _plain_text
+        _source = "auto"
+        _target = target
         try:
             endpoint = "https://tmt.tencentcloudapi.com"
             params = {
@@ -248,7 +126,7 @@ async def _(event: Event, state: T_State):
             logger.warning(
                 f"ActionFailed {e.info['retcode']} {e.info['msg'].lower()} {e.info['wording']}"
             )
-    else:
+ else:
         logger.warning("Not supported: translator")
 
 
