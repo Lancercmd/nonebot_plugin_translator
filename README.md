@@ -1,3 +1,11 @@
+<!--
+ * @Author       : Lancercmd
+ * @Date         : 2022-12-26 02:39:12
+ * @LastEditors  : Lancercmd
+ * @LastEditTime : 2022-12-26 02:55:05
+ * @Description  : None
+ * @GitHub       : https://github.com/Lancercmd
+-->
 # 多语种翻译插件
 基于 [NoneBot2](https://github.com/nonebot/nonebot2)。
 ## 前言
@@ -32,10 +40,11 @@ tencentcloud_common_region = "ap-shanghai"
 tencentcloud_common_secretid = ""
 tencentcloud_common_secretkey = ""
 ```
-这样，就能够在 Bot 所在群聊或私聊发送 `翻译` 或 `机翻` 使用了
+这样，就能够在 Bot 所在群聊或私聊发送 `翻译` 或 `翻译+` 使用了
+> `翻译+` 是一个用于进行连续翻译的翻译锁定模式，`翻译锁定` 是它的别名，请根据提示操作
 ## 常见问题
-- ***我确认我的安装和配置过程正确，但我发送 ``翻译`` 或 ``机翻`` 没有反应***  
-  &nbsp;&nbsp;&nbsp;&nbsp;如果在 ``.env.*`` 的 ``command_start`` 内仅设置了非空前缀，就必须在命令前加上前缀，比如 ``/翻译`` ``/机翻``
+- ***我确认我的安装和配置过程正确，但我发送 ``翻译`` 或 ``翻译+`` 没有反应***  
+  &nbsp;&nbsp;&nbsp;&nbsp;如果在 ``.env.*`` 的 ``command_start`` 内仅设置了非空前缀，就必须在命令前加上前缀，比如 ``/翻译`` ``/翻译+``
 ## 特别感谢
 - [Mrs4s / go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
 - [nonebot / nonebot2](https://github.com/nonebot/nonebot2)
