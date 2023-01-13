@@ -2,7 +2,7 @@
 Author       : Lancercmd
 Date         : 2020-12-14 13:29:38
 LastEditors  : Lancercmd
-LastEditTime : 2022-12-26 18:15:46
+LastEditTime : 2023-01-13 23:26:44
 Description  : None
 GitHub       : https://github.com/Lancercmd
 """
@@ -18,6 +18,7 @@ from time import time
 from aiohttp import request
 from nonebot import get_driver
 from nonebot.adapters import Event, Message, MessageTemplate
+from nonebot.adapters.onebot.v11 import Bot as OneBot_V11_Bot
 from nonebot.adapters.onebot.v11 import MessageEvent as OneBot_V11_MessageEvent
 from nonebot.exception import ActionFailed
 from nonebot.params import CommandArg
@@ -160,43 +161,84 @@ worker2 = workers.on_command("翻译+", aliases={"机翻+", "翻译锁定", "机
 
 
 @worker1.handle()
-async def _(event: OneBot_V11_MessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(
+    bot: OneBot_V11_Bot,
+    event: OneBot_V11_MessageEvent,
+    state: T_State,
+    args: Message = CommandArg(),
+):
     avl = await iterAvaiLang(targets=False)
     state["avl"] = " | ".join(avl)
     state["valid"] = loadJsonS(dumpJsonS(avl))
-    _plain_text = args.extract_plain_text()
-    if _plain_text:
-        for language in avl:
-            if _plain_text.startswith(language):
-                state["Source"] = language
-                break
-            elif _plain_text.startswith("jp"):
-                state["Source"] = "ja"
-                break
-        if "Source" in state:
-            input = _plain_text.split(" ", 2)
-            avl = await iterAvaiLang(state["Source"])
-            if len(avl) == 1:
-                state["Target"] = avl[0]
-                if len(input) == 3:
-                    state["SourceText"] = input[2]
+    try:
+        if event.reply is not None:
+            reply_ev = event.reply
+            _source_text = reply_ev.message.extract_plain_text()
+            state["SourceText"] = _source_text
+            message = "正在检测语言..."
+            await bot.send(
+                event, message, reply_message=True, message_id=reply_ev.message_id
+            )
+            resp = await requestLanguageDetect(_source_text)
+            if resp[0]:
+                message = resp[1]
+                if "header" in state:
+                    message = "".join([state["header"], f"{message}"])
+                await worker1.finish(message)
+            else:
+                data = resp[1]
+                if "Error" in data:
+                    message = "\n".join(
+                        [
+                            f"<{data['Error']['Code']}> {data['Error']['Message']}",
+                            f"RequestId: {data['RequestId']}",
+                        ]
+                    )
+                    if "header" in state:
+                        message = "".join([state["header"], f"{message}"])
+                    await worker1.finish(message)
                 else:
-                    state["SourceText"] = input[1]
-            elif len(input) == 3:
-                state["Target"] = input[1]
-                state["SourceText"] = input[2]
-            elif len(input) == 2:
-                for language in avl:
-                    if input[0] in avl:
-                        state["Target"] = input[1]
-                    else:
-                        state["SourceText"] = input[1]
+                    _source = data["Lang"]
+                    state["Source"] = _source
         else:
-            state["SourceText"] = _plain_text
-    message = f"请选择输入语种，可选值如下~\n{state['avl']}"
-    if "header" in state:
-        message = "".join([state["header"], f"{message}"])
-    state["prompt"] = message
+            _plain_text = args.extract_plain_text()
+            if _plain_text:
+                for language in avl:
+                    if _plain_text.startswith(language):
+                        state["Source"] = language
+                        break
+                    elif _plain_text.startswith("jp"):
+                        state["Source"] = "ja"
+                        break
+                if "Source" in state:
+                    input = _plain_text.split(" ", 2)
+                    avl = await iterAvaiLang(state["Source"])
+                    if len(avl) == 1:
+                        state["Target"] = avl[0]
+                        if len(input) == 3:
+                            state["SourceText"] = input[2]
+                        else:
+                            state["SourceText"] = input[1]
+                    elif len(input) == 3:
+                        state["Target"] = input[1]
+                        state["SourceText"] = input[2]
+                    elif len(input) == 2:
+                        for language in avl:
+                            if input[0] in avl:
+                                state["Target"] = input[1]
+                            else:
+                                state["SourceText"] = input[1]
+                else:
+                    state["SourceText"] = _plain_text
+            message = f"请选择输入语种，可选值如下~\n{state['avl']}"
+            if "header" in state:
+                message = "".join([state["header"], f"{message}"])
+            state["prompt"] = message
+    except ActionFailed as e:
+        log(
+            "WARNING",
+            f"ActionFailed {e.info['retcode']} {e.info['msg'].lower()} {e.info['wording']}",
+        )
 
 
 @worker1.got("Source", prompt=MessageTemplate("{prompt}"))
@@ -281,7 +323,9 @@ async def _(event: OneBot_V11_MessageEvent, state: T_State):
 
 
 @worker2.handle()
-async def _(event: OneBot_V11_MessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(
+    event: OneBot_V11_MessageEvent, state: T_State, args: Message = CommandArg()
+):
     user_id = event.get_user_id()
     try:
         if not session_pool.find(user_id):
@@ -321,11 +365,13 @@ async def _(event: OneBot_V11_MessageEvent, state: T_State, args: Message = Comm
                     message = "".join([state["header"], f"{message}"])
                 await worker2.finish(message)
         else:
-            message = "\n".join([
-                "已恢复到翻译锁定模式的会话~",
-                "",
-                "超时会自动切出会话，请注意~",
-            ])
+            message = "\n".join(
+                [
+                    "已恢复到翻译锁定模式的会话~",
+                    "",
+                    "超时会自动切出会话，请注意~",
+                ]
+            )
             if "header" in state:
                 message = "".join([state["header"], f"{message}"])
             await worker2.send(message)
@@ -353,7 +399,9 @@ async def _(event: OneBot_V11_MessageEvent, state: T_State):
                 avl = await iterAvaiLang()
                 if _source_text in avl:
                     session_pool.add(user_id, _source_text)
-                    message = "\n".join([f"已切换为目标语种 {_source_text}", "取决于输入语种，目标语种可能变化"])
+                    message = "\n".join(
+                        [f"已切换为目标语种 {_source_text}", "取决于输入语种，目标语种可能变化"]
+                    )
                 else:
                     message = "\n".join(
                         [
@@ -427,7 +475,7 @@ async def _(event: Event) -> None:
         isinstance(event, OneBot_V11_MessageEvent)
     # fmt: on
     if not supported:
-        log("WARNING", "Not supported: translator")
+        log("WARNING", "Not supported")
 
 
 __plugin_meta__ = PluginMetadata(
