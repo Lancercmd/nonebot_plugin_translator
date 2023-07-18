@@ -1,11 +1,3 @@
-"""
-Author       : Lancercmd
-Date         : 2020-12-14 13:29:38
-LastEditors  : Lancercmd
-LastEditTime : 2023-01-13 23:26:44
-Description  : None
-GitHub       : https://github.com/Lancercmd
-"""
 from binascii import b2a_base64
 from dataclasses import dataclass
 from hashlib import sha1
@@ -482,5 +474,8 @@ __plugin_meta__ = PluginMetadata(
     name="多语种翻译插件",
     description="接口来自 腾讯机器翻译 TMT",
     usage="翻译 <ilang> <olang> <text>",
+    homepage="https://github.com/Lancercmd/nonebot_plugin_translator",
+    type="application",
+    supported_adapters={"~onebot.v11"},
     extra={"author": "Lancercmd"},
 )

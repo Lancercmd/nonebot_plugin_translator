@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_translator"
-version = "2.0.0b4.post0"
+version = "2.0.0b4.post2"
 description = "Multi language tanslator worked with nonebot2"
 authors = ["Lancercmd <lancercmd@gmail.com>"]
 license = "GPL-3.0-or-later"
