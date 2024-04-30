@@ -15,7 +15,7 @@ aiohttp = "^3.8.1"
 ujson = ">=4.3.0,<6.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^8.1.2"
+pytest = "^8.2.0"
 black = "^24.4.2"
 
 [build-system]
